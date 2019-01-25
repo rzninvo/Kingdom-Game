@@ -5,16 +5,18 @@
 #include <time.h>
 
 /* THE KINGS GAME :: FINAL PROJJECT
-    Written by Roham Zendehdel Nobari at 5:17:29 AM 12/31/2018
-    COPYRIGHTS by RKK
+    Written by Roham Zendehdel Nobari at <5:17:29 AM 12/31/2018> for the first time
+    © ALL RIGHTS RESERVERED
 */
 #define P_C 7
 
-char *CHOICEDIR = "Data\\CHOICS.txt";
+char *CHOICEDIR = "Data\\CHOICES.txt";
 char *TOPDIR = "Data\\Kings.bin";
 char *SAVEDIR = "Data\\Save\\";
 
-// Initializing a structure for choices from CHOICES.txt
+/*______________________________________________________________
+   Initializing a structure for choices from CHOICES.txt
+  ______________________________________________________________ */
 
 struct choice
 {
@@ -24,7 +26,9 @@ struct choice
     int Probability;
 };
 
-// Initializing a structure for a saved choice.
+/*______________________________________________________________
+   Initializing a structure for a saved choice.
+  ______________________________________________________________ */
 
 struct Saved_Choices
 {
@@ -34,7 +38,9 @@ struct Saved_Choices
     int People, Treasury, Court;
 };
 
-// Initializing a structure for game status.
+/*______________________________________________________________
+   Initializing a structure for game status.
+  ______________________________________________________________ */
 
 struct Saved_Data
 {
@@ -45,7 +51,9 @@ struct Saved_Data
     int Auto_Save;
 };
 
-// Initializing a structure for problem link_lists
+/*______________________________________________________________
+   Initializing a structure for problem link_lists
+  ______________________________________________________________ */
 
 struct node
 {
@@ -54,7 +62,9 @@ struct node
     struct node* Next;
 };
 
-// Node creator function
+/*______________________________________________________________
+   Node creator function ( link_list )
+  ______________________________________________________________ */
 
 struct node* create_node(struct choice C)
 {
@@ -65,7 +75,9 @@ struct node* create_node(struct choice C)
     return nn;
 }
 
-// Adding Choices from the end of link_list
+/*______________________________________________________________
+   Adding Choices from the end of link_list
+  ______________________________________________________________ */
 
 void push_back(struct node** list, struct choice C)
 {
@@ -83,7 +95,9 @@ void push_back(struct node** list, struct choice C)
     pt->Next->Prev = pt;
 }
 
-// Fetching the length of list
+/*______________________________________________________________
+   Fetching the length of list
+  ______________________________________________________________ */
 
 int List_Length(struct node* list)
 {
@@ -97,7 +111,9 @@ int List_Length(struct node* list)
     return Counter;
 }
 
-// Deleting a specified node from the link_list
+/*______________________________________________________________
+   Deleting a specified node from the link_list
+  ______________________________________________________________ */
 
 void Delete_Problem(struct node** list, struct node* Problem)
 {
@@ -121,7 +137,9 @@ void Delete_Problem(struct node** list, struct node* Problem)
     }
 }
 
-// Deleting the link_list
+/*______________________________________________________________
+   Deleting the link_list
+  ______________________________________________________________ */
 
 void Delete(struct node** list)
 {
@@ -135,7 +153,9 @@ void Delete(struct node** list)
     free(*list);
 }
 
-// Reading problems from their respective files
+/*______________________________________________________________
+   Reading problems from their respective files
+  ______________________________________________________________ */
 
 struct choice Read(FILE *fp)
 {
@@ -155,7 +175,9 @@ struct choice Read(FILE *fp)
     return C;
 }
 
-// Initializing the link_list with it's problems
+/*______________________________________________________________
+   Initializing the link_list with it's problems
+  ______________________________________________________________ */
 
 int Initiliaze_Choices(struct node** list)
 {
@@ -188,7 +210,9 @@ int Initiliaze_Choices(struct node** list)
     return n;
 }
 
-// Checking if the game is lost or not
+/*______________________________________________________________
+   Checking if the game is lost or not
+  ______________________________________________________________ */
 
 int Loss_Check(int KPeople, int KTreasury, int KCourt)
 {
@@ -202,7 +226,9 @@ int Loss_Check(int KPeople, int KTreasury, int KCourt)
     return 0;
 }
 
-// Selecting a random node(problem) based on their probability
+/*______________________________________________________________
+   Selecting a random node(problem) based on their probability
+  ______________________________________________________________ */
 
 struct node* Random_Problem(struct node** list, int Choice_Count)
 {
@@ -230,7 +256,9 @@ struct node* Random_Problem(struct node** list, int Choice_Count)
     }
 }
 
-// Printing the given node(problem)
+/*______________________________________________________________
+   Printing the given node(problem)
+  ______________________________________________________________ */
 
 void Print_Problem(struct node* Problem)
 {
@@ -239,7 +267,9 @@ void Print_Problem(struct node* Problem)
         printf("[%d]%s\n", i + 1, Problem->Value.Choice[i]);
 }
 
-// Adding the answered problem to the dynamic array S_C for saving the previous decisions of the king
+/*_______________________________________________________________________________________________________________
+   Adding the answered problem to the dynamic array S_C for saving the previous decisions of the king
+  _______________________________________________________________________________________________________________ */
 
 void Save_Problem(struct node* Problem, struct Saved_Choices** S_C, int* Saved_Choices_Count, int Chosen, int People, int Treasury, int Court)
 {
@@ -270,7 +300,9 @@ void Save_Problem(struct node* Problem, struct Saved_Choices** S_C, int* Saved_C
     }
 }
 
-// Compare function used for finding the top 10 kings
+/*______________________________________________________________
+   Compare function used for finding the top 10 kings
+  ______________________________________________________________ */
 
 int KING_CMP(const void* a, const void* b)
 {
@@ -305,7 +337,9 @@ int KING_CMP(const void* a, const void* b)
     }
 }
 
-// Printing the top 10 Kings
+/*______________________________________________________________
+   Printing the top 10 Kings
+  ______________________________________________________________ */
 
 void PRINT_TOP()
 {
@@ -353,7 +387,9 @@ void PRINT_TOP()
     }
 }
 
-// Finding if the king has had a previous game or not
+/*______________________________________________________________
+   Finding if the king has had a previous game or not
+  ______________________________________________________________ */
 
 void Find_King(struct Saved_Data S_D)
 {
@@ -376,7 +412,9 @@ void Find_King(struct Saved_Data S_D)
     fclose(FK);
 }
 
-// Saving the previous decisions of the king and the game status in a bin file
+/*______________________________________________________________________________________________
+   Saving the previous decisions of the king and the game status in a bin file
+  ______________________________________________________________________________________________ */
 
 void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* S_C, int Saved_Choices_Count, char King_Name[], int KPeople, int KTreasury,
                int KCourt, int State, int Auto)
@@ -407,7 +445,9 @@ void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* 
     Find_King(S_D);
 }
 
-// Loading the previous game of the king and resuming it / returning -1 if there is no such file / returning -3 if the file was in auto_save status
+/*___________________________________________________________________________________________________________________________________________________
+   Loading the previous game of the king and resuming it ( returning -1 if there is no such file / returning -3 if the file was in auto_save status )
+  ___________________________________________________________________________________________________________________________________________________ */
 
 int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], struct Saved_Choices** S_C, int *Saved_Choices_Count, int *KPeople,
               int *KTreasury, int *KCourt, int *State, int Condition)
@@ -448,7 +488,9 @@ int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], s
     return 0;
 }
 
-// Printing the previous decisions that the king had made in it's saved game
+/*__________________________________________________________________________________________
+   Printing the previous decisions that the king had made in it's saved game
+  __________________________________________________________________________________________ */
 
 void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
 {
@@ -466,7 +508,9 @@ void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
     }
 }
 
-// Find the random problem in the list
+/*______________________________________________________________
+   Find the random problem in the list
+  ______________________________________________________________ */
 
 struct node* Find_Problem(struct node** list, struct Saved_Choices* S_C, int Saved_Choices_Count)
 {
@@ -483,7 +527,9 @@ struct node* Find_Problem(struct node** list, struct Saved_Choices* S_C, int Sav
     return NULL;
 }
 
-// Updating the probabilities of the nodes
+/*______________________________________________________________
+   Updating the probabilities of the nodes
+  ______________________________________________________________ */
 
 void Update_Probabilities(struct node* list, int Probabilities[P_C])
 {
@@ -498,7 +544,9 @@ void Update_Probabilities(struct node* list, int Probabilities[P_C])
     }
 }
 
-// Updating the probability of the list based on the loaded probabilities ( from the previous game )
+/*________________________________________________________________________________________________________
+   Updating the probability of the list based on the loaded probabilities ( from the previous game )
+  ________________________________________________________________________________________________________ */
 
 void Update_List(struct node** list, int Probabilities[7])
 {
