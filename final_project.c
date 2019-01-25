@@ -8,7 +8,7 @@
     Written by Roham Zendehdel Nobari at 5:17:29 AM 12/31/2018
     COPYRIGHTS by RKK
 */
-#define P_C 7
+#define DEBUG 1
 
 char *CHOICEDIR = "Data\\CHOICES.txt";
 char *TOPDIR = "Data\\Kings.bin";
@@ -34,7 +34,7 @@ struct Saved_Data
 {
     char King_Name[255];
     int State;
-    int Probabilities[P_C];
+    int Probabilities[5];
     int People, Treasury, Court;
     int Auto_Save;
 };
@@ -55,15 +55,10 @@ struct node* create_node(struct choice C)
     return nn;
 }
 
-void push_back(struct node** list, struct choice C)
+void push_back(struct node* list, struct choice C)
 {
-    struct node* pt = *list;
+    struct node* pt = list;
 
-    if (*list == NULL)
-    {
-        *list = create_node(C);
-        return;
-    }
     while(pt->Next != NULL)
         pt = pt->Next;
 
@@ -71,50 +66,65 @@ void push_back(struct node** list, struct choice C)
     pt->Next->Prev = pt;
 }
 
+void Debug_Log(char Log[])
+{
+
+}
+
 int List_Length(struct node* list)
 {
     int Counter = 0;
-    struct node* pt = list;
-    while (pt != NULL)
+    while (list->Next != NULL)
     {
-        pt = pt->Next;
+        list = list->Next;
         Counter++;
     }
     return Counter;
 }
 
-void Delete_Problem(struct node** list, struct node* Problem)
+void Print_List(struct node* list)
 {
-    struct node* Prev = (Problem)->Prev;
-    struct node* Next = (Problem)->Next;
+    struct node* pt = list->Next;
 
-    if (Prev != NULL)
+    while (pt != NULL)
     {
-        Prev->Next = Next;
-        if (Next != NULL)
-            Next->Prev = Prev;
-        free(Problem);
+        printf("%s\n",pt->Value.Problem);
+        for (int i = 0 ; i < 2 ; i++)
+        {
+            printf("%s\n",pt->Value.Choice[i]);
+            printf("%d\n",pt->Value.People[i]);
+            printf("%d\n",pt->Value.Treasury[i]);
+            printf("%d\n",pt->Value.Court[i]);
+        }
+        printf("========================\n");
+        pt = pt->Next;
     }
-    else
-    {
-        struct node* temp = *list;
-        *list = (*list)->Next;
-        if (*list != NULL)
-            (*list)->Prev = NULL;
-        free(temp);
-    }
+    #if DEBUG
+
+    #endif // DEBUG
 }
 
-void Delete(struct node** list)
+void Delete_Problem(struct node* Problem)
 {
-    struct node* pt = (*list)->Next;
-    while (pt->Next != NULL)
+    struct node* Prev = Problem->Prev;
+    struct node* Next = Problem->Next;
+    free(Problem);
+    printf("THIS IS DELETE_PROBLEM");
+    if (Prev != NULL)
+        Prev->Next = Next;
+    if (Next != NULL)
+        Next->Prev = Prev;
+}
+
+void Delete(struct node* list)
+{
+    struct node* pt = NULL;
+    while (list->Next != NULL)
     {
-        struct node* temp = pt;
-        pt = pt->Next;
-        free(temp);
+        pt = list;
+        list = list->Next;
+        free(pt);
     }
-    free(*list);
 }
 
 struct choice Read(FILE *fp)
@@ -135,7 +145,7 @@ struct choice Read(FILE *fp)
     return C;
 }
 
-int Initiliaze_Choices(struct node** list)
+int Initiliaze_Choices(struct node* list)
 {
     FILE *FCHOICE = fopen(CHOICEDIR, "r");
     char DIR[255];
@@ -168,12 +178,13 @@ int Loss_Check(int KPeople, int KTreasury, int KCourt)
     return 0;
 }
 
-struct node* Random_Problem(struct node** list, int Choice_Count)
+struct node* Random_Problem(struct node** List, int Choice_Count)
 {
     int Counter = 0 , Random_Prob = 0;
+    struct node* list = (*List);
     for (int i = 3; i >= 1; i--)
     {
-        struct node* pt = *list;
+        struct node *pt = list->Next;
         struct node* Equal_Probability[Choice_Count];
         while (pt != NULL)
         {
@@ -198,7 +209,7 @@ void Print_Problem(struct node* Problem)
 {
     printf("%s\n",Problem->Value.Problem);
     for (int i = 0 ; i < 2 ; i++)
-        printf("[%d]%s\n", i + 1, Problem->Value.Choice[i]);
+        printf("%s\n",Problem->Value.Choice[i]);
 }
 
 void Save_Problem(struct node* Problem, struct Saved_Choices** S_C, int* Saved_Choices_Count, int Chosen, int People, int Treasury, int Court)
@@ -320,7 +331,7 @@ void Find_King(struct Saved_Data S_D)
     fclose(FK);
 }
 
-void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* S_C, int Saved_Choices_Count, char King_Name[], int KPeople, int KTreasury,
+void Save_Data(struct node* list, struct Saved_Choices* S_C, int Saved_Choices_Count, char King_Name[], int KPeople, int KTreasury,
                int KCourt, int State, int Auto)
 {
     char DIR[255];
@@ -328,10 +339,13 @@ void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* 
     strcpy(DIR, "Data\\Save\\");
 
     struct Saved_Data S_D;
-    struct node* pt = list;
-    for (int i = 0 ; i < P_C; i++)
+    int n = 0;
+    struct node* pt = list->Next;
+    while (pt != NULL)
     {
-        S_D.Probabilities[i] = Probabilities[i];
+        S_D.Probabilities[n] = pt->Value.Probability;
+        pt = pt->Next;
+        n++;
     }
     strcpy(S_D.King_Name, King_Name);
     S_D.People = KPeople;
@@ -349,7 +363,7 @@ void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* 
     Find_King(S_D);
 }
 
-int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], struct Saved_Choices** S_C, int *Saved_Choices_Count, int *KPeople,
+int Load_Data(char King_Name[255], struct node** list, struct Saved_Choices** S_C, int *Saved_Choices_Count, int *KPeople,
               int *KTreasury, int *KCourt, int *State, int Condition)
 {
     char DIR[255];
@@ -365,7 +379,7 @@ int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], s
     {
         struct Saved_Data S;
         int SCC;
-        struct node* pt = *list;
+        struct node* pt = (*list)->Next;
         fread(&S, sizeof(S), 1, F);
         if (S.State == -1 && Condition == 0)
             return -1;
@@ -379,11 +393,21 @@ int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], s
         *KCourt = S.Court;
         *Saved_Choices_Count = SCC;
         *State = S.State;
-        for (int i = 0 ; i < P_C; i++)
+        int Counter = 0;
+        while (pt != NULL)
         {
-            Probabilities[i] = S.Probabilities[i];
+            if (S.Probabilities[Counter] == 0)
+            {
+                Delete_Problem(pt);
+                pt = pt->Next;
+                continue;
+            }
+            pt->Value.Probability = S.Probabilities[Counter];
+            pt = pt->Next;
+            Counter++;
         }
     }
+    printf("YES");
     fclose(F);
     return 0;
 }
@@ -394,9 +418,9 @@ void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
     for (int i = 0 ; i < Saved_Choices_Count-1; i++)
     {
         printf("%s\n", S_C[i].Problem);
-        printf("[1]%s\n", S_C[i].Choice[0]);
-        printf("[2]%s\n", S_C[i].Choice[1]);
-        printf("Decision = %d\n", S_C[i].Chosen);
+        printf("%s\n", S_C[i].Choice[0]);
+        printf("%s\n", S_C[i].Choice[1]);
+        printf("%d\n", S_C[i].Chosen);
         printf("\n\n\n");
         printf("=================================\nPeople: %d Treasury: %d Court: %d\n=================================\n",
         S_C[i].People, S_C[i].Treasury, S_C[i].Court);
@@ -406,61 +430,29 @@ void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
 
 struct node* Find_Problem(struct node** list, struct Saved_Choices* S_C, int Saved_Choices_Count)
 {
-    struct node* pt = *list;
+    struct node* pt = (*list)->Next;
     while (pt != NULL)
     {
         if (strcmp(pt->Value.Problem, S_C[Saved_Choices_Count-1].Problem) == 0)
-        {
             return pt;
-        }
         else
             pt = pt->Next;
     }
     return NULL;
 }
 
-void Update_Probabilities(struct node* list, int Probabilities[P_C])
-{
-    struct node* pt = list;
-    for (int i = 0 ; i < P_C; i++)
-    {
-        if (Probabilities[i] != 0)
-        {
-            Probabilities[i] = pt->Value.Probability;
-            pt = pt->Next;
-        }
-    }
-}
-
-void Update_List(struct node** list, int Probabilities[7])
-{
-    struct node* pt = *list;
-    int counter = 0;
-    while(pt != NULL)
-    {
-        pt->Value.Probability = Probabilities[counter];
-        if (Probabilities[counter] == 0)
-            Delete_Problem(list, pt);
-        pt = pt->Next;
-        counter++;
-    }
-}
-
 int main()
 {
     //INITIALIZE THE LIST OF PROBLEMS
-    struct node* list = NULL;
-    int Choice_Count = Initiliaze_Choices(&list);
+    struct node* list = (struct node*)malloc(sizeof(struct node));
+    list->Next = NULL;
+    list->Prev = NULL;
+    int Choice_Count = Initiliaze_Choices(list);
     // LOADED_LIST
-    struct node* list_L = NULL;
-    int Choice_Count_L = Initiliaze_Choices(&list_L);
-
-    int Probabilities[P_C], Probabilities_L[P_C];
-
-    for (int i = 0 ; i < P_C; i++)
-        Probabilities[i] = 3;
-    for (int i = 0 ; i < P_C; i++)
-        Probabilities_L[i] = 3;
+    struct node* list_L = (struct node*)malloc(sizeof(struct node));
+    list_L->Next = NULL;
+    list_L->Prev = NULL;
+    int Choice_Count_L = Initiliaze_Choices(list_L);
     // END OF PROBLEM INITIALIZATION
 
     struct Saved_Choices *S_C = NULL;
@@ -491,38 +483,30 @@ int main()
         getchar();
         printf("\nPRESS ANY KEY TO EXIT...!");
         getchar();
-        free(S_C);
-        free(S_C_L);
-        Delete(&list);
         return 0;
     }
     if (First_Choice == 2)
     {
-        if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -2)
+        if (Load_Data(King_Name, &list, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -2)
         {
             int C;
             printf("You don't have a previous game...!\n1) New Game\n2) Exit\n");
             scanf("%d", &C);
             if (C == 2)
-            {
-                free(S_C);
-                free(S_C_L);
-                Delete(&list);
                 return 0;
-            }
         }
-        else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -1)
+        else if (Load_Data(King_Name, &list, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -1)
         {
             int C;
             printf("You lost your previous game...!\n1) New Game\n2) Show Details\n");
             scanf("%d", &C);
             if (C == 2)
             {
-                Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
+                Load_Data(King_Name, &list, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
                 Print_Previous_Choices(S_C, Saved_Choices_Count);
             }
         }
-        else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -3)
+        else if (Load_Data(King_Name, &list, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -3)
         {
             int C;
             printf("You didn't save your previous progress...!\n1) New Game\n2) Resume from auto_save\n");
@@ -530,26 +514,21 @@ int main()
             if (C == 2)
             {
                 Load_Condition = 1;
-                Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
-                Load_Data(King_Name, &list_L, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
+                Load_Data(King_Name, &list, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
+                Load_Data(King_Name, &list_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
                 Print_Previous_Choices(S_C, Saved_Choices_Count);
-                Update_List(&list, Probabilities);
-                Update_List(&list_L, Probabilities_L);
             }
         }
         else
         {
             Load_Condition = 1;
-            Load_Data(King_Name, &list_L, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
+            Load_Data(King_Name, &list_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
             Print_Previous_Choices(S_C, Saved_Choices_Count);
-            Update_List(&list, Probabilities);
-            Update_List(&list_L, Probabilities_L);
         }
     }
-
     while (Loss_Check(KPeople, KTreasury, KCourt) == 0 && State != -1)
     {
-        Save_Data(list, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 1);
+        Save_Data(list, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 1);
         struct node* Problem = NULL;
         int Choice = 0;
         if (State == 0)
@@ -563,7 +542,6 @@ int main()
             Problem = Find_Problem(&list, S_C, Saved_Choices_Count);
             Print_Problem(Problem);
         }
-
         while(1)
         {
             scanf("%d",&Choice);
@@ -596,10 +574,10 @@ int main()
                 if (Choice == 'y' || Choice == 'Y')
                 {
                     Save_Problem(Problem, &S_C, &Saved_Choices_Count, -1, KPeople, KTreasury, KCourt);
-                    Save_Data(list, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 0);
+                    Save_Data(list, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 0);
                     printf("Thank You For Playing!\n");
                     free(S_C);
-                    Delete(&list);
+                    Delete(list);
                     getchar();
                     printf("\nPRESS ANY KEY TO EXIT...!");
                     getchar();
@@ -608,10 +586,9 @@ int main()
                 else
                 {
                     if (Load_Condition == 1)
-                        Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
+                        Save_Data(list_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
                     free(S_C);
-                    free(S_C_L);
-                    Delete(&list);
+                    Delete(list);
                     getchar();
                     printf("\nPRESS ANY KEY TO EXIT...!");
                     getchar();
@@ -629,22 +606,12 @@ int main()
             S_C[Saved_Choices_Count-1].Court = KCourt;
             State = 0;
         }
-
-        Problem->Value.Probability = (Problem->Value.Probability) - 1;
-        Update_Probabilities(list, Probabilities);
-
+        Problem->Value.Probability--;
         if (Problem->Value.Probability == 0)
-        {
-            Delete_Problem(&list, Problem);
-        }
+            Delete_Problem(Problem);
         if (List_Length(list) == 0)
-        {
-            Initiliaze_Choices(&list);
-            for (int i = 0 ; i < P_C; i++)
-                Probabilities[i] = 3;
-            for (int i = 0 ; i < P_C; i++)
-                Probabilities_L[i] = 3;
-        }
+            Initiliaze_Choices(list);
+        printf("LIST LENTGH : %d\n\n\n",List_Length(list));
     }
     if (State != -1)
     {
@@ -655,11 +622,10 @@ int main()
         scanf("%c", &Choice);
         if (Choice == 'y' || Choice == 'Y')
         {
-            Save_Data(list, Probabilities, S_C, Saved_Choices_Count+1, King_Name, KPeople, KTreasury, KCourt, -1, 0);
+            Save_Data(list, S_C, Saved_Choices_Count+1, King_Name, KPeople, KTreasury, KCourt, -1, 0);
             printf("Thank You For Playing!\n");
             free(S_C);
-            free(S_C_L);
-            Delete(&list);
+            Delete(list);
             getchar();
             printf("\nPRESS ANY KEY TO EXIT...!");
             getchar();
@@ -668,10 +634,9 @@ int main()
         else
         {
             if (Load_Condition == 1)
-                Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
+                Save_Data(list_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
             free(S_C);
-            free(S_C_L);
-            Delete(&list);
+            Delete(list);
             getchar();
             printf("\nPRESS ANY KEY TO EXIT...!");
             getchar();
@@ -681,8 +646,7 @@ int main()
     else
     {
         free(S_C);
-        free(S_C_L);
-        Delete(&list);
+        Delete(list);
         return 0;
     }
 }
