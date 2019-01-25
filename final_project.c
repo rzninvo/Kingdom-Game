@@ -5,16 +5,17 @@
 #include <time.h>
 
 /* THE KINGS GAME :: FINAL PROJJECT
-    Written by Roham Zendehdel Nobari at 5:17:29 AM 12/31/2018
-    COPYRIGHTS by RKK
+    Written by Roham Zendehdel Nobari at <5:17:29 AM 12/31/2018> for the first time
+    © ALL RIGHTS RESERVERED
 */
-#define P_C 7
 
-char *CHOICEDIR = "Data\\CHOICS.txt";
+char *CHOICEDIR = "Data\\CHOICES.txt";
 char *TOPDIR = "Data\\Kings.bin";
 char *SAVEDIR = "Data\\Save\\";
 
-// Initializing a structure for choices from CHOICES.txt
+/*______________________________________________________________
+   Initializing a structure for choices from CHOICES.txt
+  ______________________________________________________________ */
 
 struct choice
 {
@@ -24,7 +25,9 @@ struct choice
     int Probability;
 };
 
-// Initializing a structure for a saved choice.
+/*______________________________________________________________
+   Initializing a structure for a saved choice.
+  ______________________________________________________________ */
 
 struct Saved_Choices
 {
@@ -34,18 +37,21 @@ struct Saved_Choices
     int People, Treasury, Court;
 };
 
-// Initializing a structure for game status.
+/*______________________________________________________________
+   Initializing a structure for game status.
+  ______________________________________________________________ */
 
 struct Saved_Data
 {
     char King_Name[255];
     int State;
-    int Probabilities[P_C];
     int People, Treasury, Court;
     int Auto_Save;
 };
 
-// Initializing a structure for problem link_lists
+/*______________________________________________________________
+   Initializing a structure for problem link_lists
+  ______________________________________________________________ */
 
 struct node
 {
@@ -54,7 +60,9 @@ struct node
     struct node* Next;
 };
 
-// Node creator function
+/*______________________________________________________________
+   Node creator function ( link_list )
+  ______________________________________________________________ */
 
 struct node* create_node(struct choice C)
 {
@@ -65,7 +73,9 @@ struct node* create_node(struct choice C)
     return nn;
 }
 
-// Adding Choices from the end of link_list
+/*______________________________________________________________
+   Adding Choices from the end of link_list
+  ______________________________________________________________ */
 
 void push_back(struct node** list, struct choice C)
 {
@@ -83,7 +93,9 @@ void push_back(struct node** list, struct choice C)
     pt->Next->Prev = pt;
 }
 
-// Fetching the length of list
+/*______________________________________________________________
+   Fetching the length of list
+  ______________________________________________________________ */
 
 int List_Length(struct node* list)
 {
@@ -97,7 +109,9 @@ int List_Length(struct node* list)
     return Counter;
 }
 
-// Deleting a specified node from the link_list
+/*______________________________________________________________
+   Deleting a specified node from the link_list
+  ______________________________________________________________ */
 
 void Delete_Problem(struct node** list, struct node* Problem)
 {
@@ -121,7 +135,9 @@ void Delete_Problem(struct node** list, struct node* Problem)
     }
 }
 
-// Deleting the link_list
+/*______________________________________________________________
+   Deleting the link_list
+  ______________________________________________________________ */
 
 void Delete(struct node** list)
 {
@@ -135,7 +151,9 @@ void Delete(struct node** list)
     free(*list);
 }
 
-// Reading problems from their respective files
+/*______________________________________________________________
+   Reading problems from their respective files
+  ______________________________________________________________ */
 
 struct choice Read(FILE *fp)
 {
@@ -155,7 +173,9 @@ struct choice Read(FILE *fp)
     return C;
 }
 
-// Initializing the link_list with it's problems
+/*______________________________________________________________
+   Initializing the link_list with it's problems
+  ______________________________________________________________ */
 
 int Initiliaze_Choices(struct node** list)
 {
@@ -188,7 +208,9 @@ int Initiliaze_Choices(struct node** list)
     return n;
 }
 
-// Checking if the game is lost or not
+/*______________________________________________________________
+   Checking if the game is lost or not
+  ______________________________________________________________ */
 
 int Loss_Check(int KPeople, int KTreasury, int KCourt)
 {
@@ -202,7 +224,9 @@ int Loss_Check(int KPeople, int KTreasury, int KCourt)
     return 0;
 }
 
-// Selecting a random node(problem) based on their probability
+/*______________________________________________________________
+   Selecting a random node(problem) based on their probability
+  ______________________________________________________________ */
 
 struct node* Random_Problem(struct node** list, int Choice_Count)
 {
@@ -230,16 +254,20 @@ struct node* Random_Problem(struct node** list, int Choice_Count)
     }
 }
 
-// Printing the given node(problem)
+/*______________________________________________________________
+   Printing the given node(problem)
+  ______________________________________________________________ */
 
 void Print_Problem(struct node* Problem)
 {
-    printf("%s\n",Problem->Value.Problem);
+    printf("\n%s\n",Problem->Value.Problem);
     for (int i = 0 ; i < 2 ; i++)
         printf("[%d]%s\n", i + 1, Problem->Value.Choice[i]);
 }
 
-// Adding the answered problem to the dynamic array S_C for saving the previous decisions of the king
+/*_______________________________________________________________________________________________________________
+   Adding the answered problem to the dynamic array S_C for saving the previous decisions of the king
+  _______________________________________________________________________________________________________________ */
 
 void Save_Problem(struct node* Problem, struct Saved_Choices** S_C, int* Saved_Choices_Count, int Chosen, int People, int Treasury, int Court)
 {
@@ -270,7 +298,9 @@ void Save_Problem(struct node* Problem, struct Saved_Choices** S_C, int* Saved_C
     }
 }
 
-// Compare function used for finding the top 10 kings
+/*______________________________________________________________
+   Compare function used for finding the top 10 kings
+  ______________________________________________________________ */
 
 int KING_CMP(const void* a, const void* b)
 {
@@ -305,7 +335,9 @@ int KING_CMP(const void* a, const void* b)
     }
 }
 
-// Printing the top 10 Kings
+/*______________________________________________________________
+   Printing the top 10 Kings
+  ______________________________________________________________ */
 
 void PRINT_TOP()
 {
@@ -353,7 +385,9 @@ void PRINT_TOP()
     }
 }
 
-// Finding if the king has had a previous game or not
+/*______________________________________________________________
+   Finding if the king has had a previous game or not
+  ______________________________________________________________ */
 
 void Find_King(struct Saved_Data S_D)
 {
@@ -376,9 +410,11 @@ void Find_King(struct Saved_Data S_D)
     fclose(FK);
 }
 
-// Saving the previous decisions of the king and the game status in a bin file
+/*______________________________________________________________________________________________
+   Saving the previous decisions of the king and the game status in a bin file
+  ______________________________________________________________________________________________ */
 
-void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* S_C, int Saved_Choices_Count, char King_Name[], int KPeople, int KTreasury,
+void Save_Data(struct node* list, int list_size, int Probabilities[list_size], struct Saved_Choices* S_C, int Saved_Choices_Count, char King_Name[], int KPeople, int KTreasury,
                int KCourt, int State, int Auto)
 {
     char DIR[255];
@@ -387,10 +423,6 @@ void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* 
 
     struct Saved_Data S_D;
     struct node* pt = list;
-    for (int i = 0 ; i < P_C; i++)
-    {
-        S_D.Probabilities[i] = Probabilities[i];
-    }
     strcpy(S_D.King_Name, King_Name);
     S_D.People = KPeople;
     S_D.Treasury = KTreasury;
@@ -401,15 +433,19 @@ void Save_Data(struct node* list, int Probabilities[P_C], struct Saved_Choices* 
     strcat(DIR, ".bin");
     FILE* F = fopen(DIR,"wb");
     fwrite(&S_D, sizeof(S_D), 1, F);
+    fwrite(&list_size, sizeof(int), 1, F);
+    fwrite(Probabilities, sizeof(int), list_size, F);
     fwrite(&Saved_Choices_Count, sizeof(int), 1, F);
     fwrite(S_C, sizeof(struct Saved_Choices), Saved_Choices_Count, F);
     fclose(F);
     Find_King(S_D);
 }
 
-// Loading the previous game of the king and resuming it / returning -1 if there is no such file / returning -3 if the file was in auto_save status
+/*___________________________________________________________________________________________________________________________________________________
+   Loading the previous game of the king and resuming it ( returning -1 if there is no such file / returning -3 if the file was in auto_save status )
+  ___________________________________________________________________________________________________________________________________________________ */
 
-int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], struct Saved_Choices** S_C, int *Saved_Choices_Count, int *KPeople,
+int Load_Data(char King_Name[255], struct node** list, int list_size, int Probabilities[list_size], struct Saved_Choices** S_C, int *Saved_Choices_Count, int *KPeople,
               int *KTreasury, int *KCourt, int *State, int Condition)
 {
     char DIR[255];
@@ -425,12 +461,16 @@ int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], s
     {
         struct Saved_Data S;
         int SCC;
+        int L_S;
         struct node* pt = *list;
         fread(&S, sizeof(S), 1, F);
         if (S.State == -1 && Condition == 0)
             return -1;
         if (S.Auto_Save == 1 && Condition == 0)
             return -3;
+        fread(&L_S, sizeof(int), 1, F);
+        int Prob[L_S];
+        fread(Prob, sizeof(int), L_S, F);
         fread(&SCC, sizeof(int), 1, F);
         (*S_C) = (struct Saved_Choices*)malloc(SCC * sizeof(struct Saved_Choices));
         fread(*S_C, sizeof(struct Saved_Choices), SCC, F);
@@ -439,16 +479,16 @@ int Load_Data(char King_Name[255], struct node** list, int Probabilities[P_C], s
         *KCourt = S.Court;
         *Saved_Choices_Count = SCC;
         *State = S.State;
-        for (int i = 0 ; i < P_C; i++)
-        {
-            Probabilities[i] = S.Probabilities[i];
-        }
+        for (int i = 0 ; i < L_S; i++)
+            Probabilities[i] = Prob[i];
     }
     fclose(F);
     return 0;
 }
 
-// Printing the previous decisions that the king had made in it's saved game
+/*__________________________________________________________________________________________
+   Printing the previous decisions that the king had made in it's saved game
+  __________________________________________________________________________________________ */
 
 void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
 {
@@ -466,7 +506,9 @@ void Print_Previous_Choices(struct Saved_Choices *S_C, int Saved_Choices_Count)
     }
 }
 
-// Find the random problem in the list
+/*______________________________________________________________
+   Find the random problem in the list
+  ______________________________________________________________ */
 
 struct node* Find_Problem(struct node** list, struct Saved_Choices* S_C, int Saved_Choices_Count)
 {
@@ -483,12 +525,14 @@ struct node* Find_Problem(struct node** list, struct Saved_Choices* S_C, int Sav
     return NULL;
 }
 
-// Updating the probabilities of the nodes
+/*______________________________________________________________
+   Updating the probabilities of the nodes
+  ______________________________________________________________ */
 
-void Update_Probabilities(struct node* list, int Probabilities[P_C])
+void Update_Probabilities(struct node* list, int list_size, int Probabilities[list_size])
 {
     struct node* pt = list;
-    for (int i = 0 ; i < P_C; i++)
+    for (int i = 0 ; i < list_size; i++)
     {
         if (Probabilities[i] != 0)
         {
@@ -498,9 +542,11 @@ void Update_Probabilities(struct node* list, int Probabilities[P_C])
     }
 }
 
-// Updating the probability of the list based on the loaded probabilities ( from the previous game )
+/*________________________________________________________________________________________________________
+   Updating the probability of the list based on the loaded probabilities ( from the previous game )
+  ________________________________________________________________________________________________________ */
 
-void Update_List(struct node** list, int Probabilities[7])
+void Update_List(struct node** list, int list_size, int Probabilities[list_size])
 {
     struct node* pt = *list;
     int counter = 0;
@@ -519,15 +565,16 @@ int main()
     //INITIALIZE THE LIST OF PROBLEMS
     struct node* list = NULL;
     int Choice_Count = Initiliaze_Choices(&list);
+    int List_Size = List_Length(list);
     // LOADED_LIST
     struct node* list_L = NULL;
     int Choice_Count_L = Initiliaze_Choices(&list_L);
 
-    int Probabilities[P_C], Probabilities_L[P_C];
+    int Probabilities[List_Size], Probabilities_L[List_Size];
 
-    for (int i = 0 ; i < P_C; i++)
+    for (int i = 0 ; i < List_Size; i++)
         Probabilities[i] = 3;
-    for (int i = 0 ; i < P_C; i++)
+    for (int i = 0 ; i < List_Size; i++)
         Probabilities_L[i] = 3;
     // END OF PROBLEM INITIALIZATION
 
@@ -573,7 +620,7 @@ int main()
     }
     if (First_Choice == 2)
     {
-        if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -2)
+        if (Load_Data(King_Name, &list, List_Size, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -2)
         {
             int C;
             printf("You don't have a previous game...!\n1) New Game\n2) Exit\n=> ");
@@ -587,7 +634,7 @@ int main()
                 return 0;
             }
         }
-        else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -1)
+        else if (Load_Data(King_Name, &list, List_Size, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -1)
         {
             int C;
             printf("You lost your previous game...!\n1) New Game\n2) Show Details\n=> ");
@@ -595,11 +642,11 @@ int main()
             if (C == 2)
             {
                 // Loading the data of the lost game
-                Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
+                Load_Data(King_Name, &list, List_Size, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
                 Print_Previous_Choices(S_C, Saved_Choices_Count);
             }
         }
-        else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -3)
+        else if (Load_Data(King_Name, &list, List_Size, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -3)
         {
             int C;
             printf("You didn't save your previous progress...!\n1) New Game\n2) Resume from auto_save\n=> ");
@@ -608,33 +655,33 @@ int main()
             {
                 // Loading the data from the auto_saved progress
                 Load_Condition = 1;
-                Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
-                Load_Data(King_Name, &list_L, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
+                Load_Data(King_Name, &list, List_Size, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 1);
+                Load_Data(King_Name, &list_L, List_Size, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
                 Print_Previous_Choices(S_C, Saved_Choices_Count);
-                Update_List(&list, Probabilities);
-                Update_List(&list_L, Probabilities_L);
+                Update_List(&list, List_Size, Probabilities);
+                Update_List(&list_L, List_Size, Probabilities_L);
             }
         }
         else
         {
             // Loading the data from the demanded saved progress
             Load_Condition = 1;
-            Load_Data(King_Name, &list_L, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
+            Load_Data(King_Name, &list_L, List_Size, Probabilities_L, &S_C_L, &Saved_Choices_Count_L, &KPeople_L, &KTreasury_L, &KCourt_L, &State_L, 1);
             Print_Previous_Choices(S_C, Saved_Choices_Count);
-            Update_List(&list, Probabilities);
-            Update_List(&list_L, Probabilities_L);
+            Update_List(&list, List_Size, Probabilities);
+            Update_List(&list_L, List_Size, Probabilities_L);
         }
     }
 
     while (Loss_Check(KPeople, KTreasury, KCourt) == 0 && State != -1)
     {
         // Auto_saving every step
-        Save_Data(list, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 1);
+        Save_Data(list, List_Size, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 1);
         struct node* Problem = NULL;
         int Choice = 0;
         if (State == 0) // Random problem creation
         {
-            printf("=================================\nPeople: %d Treasury: %d Court: %d\n=================================\n", KPeople, KTreasury, KCourt);
+            printf("\n=================================\nPeople: %d Treasury: %d Court: %d\n=================================\n", KPeople, KTreasury, KCourt);
             Problem = Random_Problem(&list, Choice_Count);
             Print_Problem(Problem);
         }
@@ -685,7 +732,7 @@ int main()
                 {
                     // Saving the last problem
                     Save_Problem(Problem, &S_C, &Saved_Choices_Count, -1, KPeople, KTreasury, KCourt);
-                    Save_Data(list, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 0);
+                    Save_Data(list, List_Size, Probabilities, S_C, Saved_Choices_Count, King_Name, KPeople, KTreasury, KCourt, 1, 0);
                     printf("Thank You For Playing!\n");
                     // Freeing memory
                     free(S_C);
@@ -697,7 +744,7 @@ int main()
                 else if (Choice == 'n' || Choice == 'N')// Not wanting to save the progress including the auto saves -> saving from temp
                 {
                     if (Load_Condition == 1)
-                    Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
+                    Save_Data(list_L, List_Size, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
                     // Freeing memory
                     free(S_C);
                     free(S_C_L);
@@ -725,7 +772,7 @@ int main()
 
         // Decreasing the probability of the random problem
         Problem->Value.Probability = (Problem->Value.Probability) - 1;
-        Update_Probabilities(list, Probabilities);
+        Update_Probabilities(list, List_Size, Probabilities);
 
         if (Problem->Value.Probability == 0)
         {
@@ -735,9 +782,9 @@ int main()
         if (List_Length(list) == 0)
         {
             Initiliaze_Choices(&list);
-            for (int i = 0 ; i < P_C; i++)
+            for (int i = 0 ; i < List_Size; i++)
                 Probabilities[i] = 3;
-            for (int i = 0 ; i < P_C; i++)
+            for (int i = 0 ; i < List_Size; i++)
                 Probabilities_L[i] = 3;
         }
     }
@@ -757,7 +804,7 @@ int main()
         }
         if (Choice == 'y' || Choice == 'Y') // Normal Saving
         {
-            Save_Data(list, Probabilities, S_C, Saved_Choices_Count+1, King_Name, KPeople, KTreasury, KCourt, -1, 0);
+            Save_Data(list, List_Size, Probabilities, S_C, Saved_Choices_Count+1, King_Name, KPeople, KTreasury, KCourt, -1, 0);
             printf("Thank You For Playing!\n");
             // Freeing memory
             free(S_C);
@@ -770,7 +817,7 @@ int main()
         else
         {
             if (Load_Condition == 1) // Saving from temp
-                Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
+                Save_Data(list_L, List_Size, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
             // Freeing memory
             free(S_C);
             free(S_C_L);
