@@ -10,7 +10,7 @@
 */
 #define P_C 7
 
-char *CHOICEDIR = "Data\\CHOICES.txt";
+char *CHOICEDIR = "Data\\CHOICS.txt";
 char *TOPDIR = "Data\\Kings.bin";
 char *SAVEDIR = "Data\\Save\\";
 
@@ -160,6 +160,11 @@ struct choice Read(FILE *fp)
 int Initiliaze_Choices(struct node** list)
 {
     FILE *FCHOICE = fopen(CHOICEDIR, "r");
+    if (FCHOICE == NULL)
+    {
+        printf("Error: Function %s - Cannot open file %s!\n", __func__, CHOICEDIR);
+        return 0;
+    }
     char DIR[255];
     int n = 0;
     while (fgets(DIR, 255, FCHOICE)!=NULL)
@@ -169,6 +174,11 @@ int Initiliaze_Choices(struct node** list)
            DIR[strlen(DIR)-1] = '\0';
         strcat(NDIR,DIR);
         FILE* fp = fopen(NDIR,"r");
+        if (fp == NULL)
+        {
+            printf("Error: Function %s - Cannot open file %s!\n", __func__, NDIR);
+            return 0;
+        }
         struct choice Choice = Read(fp);
         push_back(list, Choice);
         fclose(fp);
@@ -304,9 +314,19 @@ void PRINT_TOP()
     int King_Count = 0;
 
     FILE* FK = fopen(TOPDIR, "rb+");
+    if (FK == NULL)
+    {
+        printf("Error: Function %s - Cannot open file %s!\n", __func__, TOPDIR);
+        return;
+    }
     while(fread(KING_DIR, sizeof(KING_DIR), 1, FK) == 1)
     {
         FILE* SAVE = fopen(KING_DIR, "rb");
+        if (SAVE == NULL)
+        {
+            printf("Error: Function %s - Cannot open file %s!\n", __func__, KING_DIR);
+            return;
+        }
         if (King_Count == 0)
         {
             S_D = (struct Saved_Data*)malloc(sizeof(struct Saved_Data));
@@ -769,3 +789,4 @@ int main()
         return 0;
     }
 }
+
