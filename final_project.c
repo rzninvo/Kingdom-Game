@@ -528,18 +528,13 @@ int main()
     int Load_Condition = 0;
 
     srand(time(0));
-    printf("=========================\nWelcome to THE KINGS GAME\n=========================\n");
-    printf("\nPlease enter your name:\n=> ");
+    printf("Welcome to THE KINGS GAME:\n");
+    printf("\nPlease enter your name:\n");
     scanf("%s", King_Name);
     printf("\n1) New Game.\n");
     printf("2) Resume Game.\n");
-    printf("3) Show High Scores.\n=> ");
+    printf("3) Show High Scores.\n");
     scanf("%d", &First_Choice);
-    while (First_Choice != 1 && First_Choice != 2 && First_Choice != 3)
-    {
-        printf("Error: Invalid Response!\n=> ");
-        scanf("%d", &First_Choice);
-    }
     if (First_Choice == 3)
     {
         PRINT_TOP();
@@ -556,7 +551,7 @@ int main()
         if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -2)
         {
             int C;
-            printf("You don't have a previous game...!\n1) New Game\n2) Exit\n=> ");
+            printf("You don't have a previous game...!\n1) New Game\n2) Exit\n");
             scanf("%d", &C);
             if (C == 2)
             {
@@ -570,7 +565,7 @@ int main()
         else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -1)
         {
             int C;
-            printf("You lost your previous game...!\n1) New Game\n2) Show Details\n=> ");
+            printf("You lost your previous game...!\n1) New Game\n2) Show Details\n");
             scanf("%d", &C);
             if (C == 2)
             {
@@ -582,7 +577,7 @@ int main()
         else if (Load_Data(King_Name, &list, Probabilities, &S_C, &Saved_Choices_Count, &KPeople, &KTreasury, &KCourt, &State, 0) == -3)
         {
             int C;
-            printf("You didn't save your previous progress...!\n1) New Game\n2) Resume from auto_save\n=> ");
+            printf("You didn't save your previous progress...!\n1) New Game\n2) Resume from auto_save\n");
             scanf("%d", &C);
             if (C == 2)
             {
@@ -626,7 +621,6 @@ int main()
 
         while(1)
         {
-            printf("=> ");
             scanf("%d",&Choice);
             if (Choice == 1 || Choice == 2)
             {
@@ -651,16 +645,9 @@ int main()
             if (Choice == -1)
             {
                 getchar();
-                printf("Do you want to save your progress?(Y/N)\n=> ");
+                printf("Do you want to save your progress?(Y/N)\n");
                 char Choice;
                 scanf("%c", &Choice);
-                getchar();
-                while (Choice != 'y' && Choice != 'Y' && Choice != 'n' && Choice != 'N')
-                {
-                    printf("\nError: Invalid Response!\n=> ");
-                    scanf("%c", &Choice);
-                    getchar();
-                }
                 if (Choice == 'y' || Choice == 'Y')
                 {
                     // Saving the last problem
@@ -670,26 +657,24 @@ int main()
                     // Freeing memory
                     free(S_C);
                     Delete(&list);
+                    getchar();
                     printf("\nPRESS ANY KEY TO EXIT...!");
                     getchar();
                     return 0;
                 }
-                else if (Choice == 'n' || Choice == 'N')// Not wanting to save the progress including the auto saves -> saving from temp
+                else // Not wanting to save the progress including the auto saves -> saving from temp
                 {
                     if (Load_Condition == 1)
-                    Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
+                        Save_Data(list_L, Probabilities_L, S_C_L, Saved_Choices_Count_L, King_Name, KPeople_L, KTreasury_L, KCourt_L, 1, 0);
                     // Freeing memory
                     free(S_C);
                     free(S_C_L);
                     Delete(&list);
+                    getchar();
                     printf("\nPRESS ANY KEY TO EXIT...!");
                     getchar();
                     return 0;
                 }
-            }
-            else
-            {
-                printf("Error: Invalid Response!\n");
             }
         }
         if (State == 0) // Saving the problem in S_C
@@ -724,17 +709,10 @@ int main()
     if (State != -1) // The game has been lost
     {
         printf("GAME OVER!\n");
-        printf("Do you want to save your progress?(Y/N)\n =>");
+        printf("Do you want to save your progress?(Y/N)\n");
         getchar();
         char Choice;
         scanf("%c", &Choice);
-        getchar();
-        while (Choice != 'y' && Choice != 'Y' && Choice != 'n' && Choice != 'N')
-        {
-            printf("\nError: Invalid Response!\n=> ");
-            scanf("%c", &Choice);
-            getchar();
-        }
         if (Choice == 'y' || Choice == 'Y') // Normal Saving
         {
             Save_Data(list, Probabilities, S_C, Saved_Choices_Count+1, King_Name, KPeople, KTreasury, KCourt, -1, 0);
@@ -743,6 +721,7 @@ int main()
             free(S_C);
             free(S_C_L);
             Delete(&list);
+            getchar();
             printf("\nPRESS ANY KEY TO EXIT...!");
             getchar();
             return 0;
@@ -755,6 +734,7 @@ int main()
             free(S_C);
             free(S_C_L);
             Delete(&list);
+            getchar();
             printf("\nPRESS ANY KEY TO EXIT...!");
             getchar();
             return 0;
